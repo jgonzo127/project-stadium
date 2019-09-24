@@ -1,0 +1,119 @@
+@import 'mixins'
+@import 'breakpoints'
+@import 'colors'
+
+:host()
+	background-color $black
+	background-position center
+	background-repeat no-repeat
+	height 100%
+	width 100%
+	float left
+#scoreText
+	top 16%
+	&.hidden
+		opacity 0
+#goalCountdown.hidden
+	opacity 0
+#scoreText, .goal-helper-text, .shots
+	position absolute
+	left 0
+	right 0
+	margin-left auto
+	margin-right auto
+	font-size 9vw
+	width 100%
+	text-align center
+	margin 0
+	line-height 1
+.goal-helper-text
+	top 10%
+	.possession-text.hidden
+		display none
+.shots
+	top -20%
+.goal-tap-wrapper
+	position fixed
+	top 0
+	left 0
+	width 100%
+	height 100%
+	z-index 20
+.goal-meter-rotation-wrapper
+	animation-name goal-meter-wrapper-rotate
+	animation-timing-function linear
+	animation-iteration-count infinite
+	transform-origin bottom center
+	top 25%
+	left 0
+	right 0
+	margin-left auto
+	margin-right auto
+	position absolute
+	width 25px
+	height 25%
+	&.hidden
+		opacity 0
+	&.stopped
+		animation-play-state paused
+.goal-meter-bg
+	background linear-gradient(to bottom, #ea1212 1%,#d8d211 35%,#299a0b 50%,#d8d211 65%,#ea1212 100%);
+	width 100%
+	height 100%
+	border 3px solid blue
+	transform perspective(3vh) rotateX(5deg)
+.goal-meter-wrapper
+	position absolute
+	width 100%
+	height 100%
+	animation-name goal-meter-wrapper-move
+	animation-timing-function linear
+	animation-iteration-count infinite
+	&.stopped
+		animation-play-state paused
+.goal-meter, .target
+	position absolute
+	top 50%
+	height 5px
+	width 100%
+.goal-meter
+	background-color white
+.bottom-wrapper
+	width 100%
+	height 30%
+	inline-flex()
+	position absolute
+	bottom 0
+	.zone
+		width 33.3%
+		border 1px solid white
+		height 100%
+		background-color #0a580a94
+		display-flex()
+		align-items()
+		justify-content()
+		&:active
+			background-color #ebffec63
+			color #333
+.target
+	background-color #0a580a94
+.home-page-content
+	padding 0
+	width 100%
+	height 100%
+
+@keyframes goal-meter-wrapper-rotate
+	0%
+		transform rotate(-35deg) perspective(3vh)
+	50%
+		transform rotate(35deg) perspective(3vh)
+	100%
+		transform rotate(-35deg) perspective(3vh)
+
+@keyframes goal-meter-wrapper-move
+	0%
+		transform translateY(50%)
+	50%
+		transform translateY(-50%)
+	100%
+		transform translateY(50%)

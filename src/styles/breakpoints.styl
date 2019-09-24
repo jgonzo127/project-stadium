@@ -1,0 +1,51 @@
+media_queries = {
+	small-device-below  : "(max-width: 639px)",
+	small-device-and-up : "(min-width: 640px)",
+	iphone5-below       : "(max-width: 568px)",
+	iphone5-and-up      : "(min-width: 569px)",
+	xperiaz3-below      : "(max-width: 592px)",
+	xperiaz3-and-up     : "(min-width: 593px)",
+	iphone-below        : "(max-width: 666px)",
+	iphone-and-up       : "(min-width: 667px)",
+	iphoneplus-below    : "(max-width: 735px)",
+	iphoneplus-and-up   : "(min-width: 736px)",
+	pixel2_xl-below     : "(max-width: 774px)",
+	pixel2_xl           : "(min-width: 776px) and (max-width: 780px)",
+	pixel2_xl-and-up    : "(min-width: 775px)",
+	iphonex-below       : "(max-width: 811px)",
+	iphonex-and-up      : "(min-width: 812px)",
+	ipad-below          : "(max-width: 1023px)",
+	ipad-and-up         : "(min-width: 1024px)",
+	ipadpro-below       : "(max-width: 1365px)",
+	ipadpro-and-up      : "(min-width: 1366px)",
+	wide-ratio          : "(min-aspect-ratio: 17/9)",
+	wide-device         : "(min-width: 768px)",
+	wide-device-max     : "(max-width: 1023px)",
+	tablet-below        : "(max-width: 959px)",
+	tablet-and-up       : "(min-width: 960px)",
+	normal-ratio        : "(max-aspect-ratio: 17/9)",
+	galaxys5            : "(min-height: 360px) and (max-height: 374px)",
+	galaxys9            : "(min-height: 300px)",
+	galaxys9-plus-below : "(max-height: 359px)",
+	galaxys9-plus       : "(max-height: 360px)",
+	galaxys9-zoom       : "(min-height: 412px)",
+	galaxys10           : "(min-width: 667px) and (max-width: 680px) and (max-height: 360px) and (max-aspect-ratio: 17/9)",
+	galaxys10-zoom      : "(min-width: 777px) and (max-width: 780px) and (max-aspect-ratio: 17/9)",
+}
+
+//make the mixin function
+breakpoint(breakpoints)
+	conditions = ()
+	for breakpoint in breakpoints
+		push(conditions, media_queries[breakpoint])
+	conditions = join("and ", conditions)
+	@media conditions
+		{block}
+
+multiBreakpoint(breakpoints)
+	conditions = ()
+	for breakpoint in breakpoints
+		push(conditions, media_queries[breakpoint])
+	conditions = join(", ", conditions)
+	@media conditions
+		{block}

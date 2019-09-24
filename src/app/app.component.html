@@ -1,0 +1,47 @@
+<div #rendererContainer class="home-page-content wrapper" id="wrapper" (touchstart)="swipe($event, 'start')" (touchend)="swipe($event, 'end')">
+  <div [ngClass]="{'hidden': !timerRunning}" id="scoreText"></div>
+  <div class="goal-tap-wrapper" *ngIf="goalMeter && !goalLinedUp" (click)="handleGoalDirection()"></div>
+  <div class="goal-tap-wrapper" *ngIf="goalMeter && goalLinedUp" (click)="handleGoalPower()"></div>
+  <h2 class="goal-helper-text" [ngClass]="{'hidden': !goalMiniGame}">
+    <span [ngClass]="{'hidden': !goaltimerVisible}" id="goalCountdown"></span>
+    <span *ngIf="goalMeter">
+      <span *ngIf="goalStatus === ''">s left <br> to shoot!</span>
+      <span *ngIf="goalStatus !== ''">{{goalStatus}}</span>
+    </span>
+    <span *ngIf="goalKeeper">
+      <span *ngIf="goalStatus === ''">s left <br> to defend a zone!</span>
+      <span *ngIf="goalStatus !== ''">{{goalStatus}}</span>
+    </span>
+  </h2>
+  <h2 class="goal-helper-text">
+    <span *ngIf="turnover">Possession Change!</span>
+    <span *ngIf="goalPrepMessage">
+      <span *ngIf="offense">Chance On Goal!</span>
+      <span *ngIf="!offense">Defend Your Goal!</span>
+    </span>
+    <span class="possession-text" [ngClass]="{'hidden': !possessionChange}">
+      <span>{{possessionTextStatus}} in: </span>
+      <span id="possessionCountdown"></span>
+    </span>
+    <span *ngIf="goText">Go!</span>
+  </h2>
+  <div class="bottom-wrapper defense-wrapper" *ngIf="!offense && !turnover && !goalPrepMessage && !possessionChange && !goalKeeper">
+      <div class="shots"> {{currentShots}}/{{totalShots}}</div>
+      <div class="zone zone-1" (click)="defenseLayout(2)">1</div>
+      <div class="zone zone-2" (click)="defenseLayout(1)">2</div>
+      <div class="zone zone-3" (click)="defenseLayout(0)">3</div>
+    </div>
+  <div class="bottom-wrapper goal-keeper-wrapper" *ngIf="goalKeeper">
+    <div class="zone zone-1" (click)="tapGoal('left')">Left</div>
+    <div class="zone zone-2" (click)="tapGoal('center')">Center</div>
+    <div class="zone zone-3" (click)="tapGoal('right')">Right</div>
+  </div>
+  <div class="goal-meter-rotation-wrapper" [ngStyle]="{'animation-duration': goalMeterSpeed}" [ngClass]="{'stopped': rotationStop, 'hidden': !goalMeter}">
+    <div class="goal-meter-bg" id="goalMeterWrapper">
+      <div class="goal-meter-wrapper" id="goalMeter" [ngClass]="{'stopped': meterStop}" [ngStyle]="{'animation-duration': goalMeterSpeed}">
+        <div class="goal-meter" *ngIf="goalLinedUp"></div>
+      </div>
+      <div class="target"></div>
+    </div>
+  </div>
+</div>

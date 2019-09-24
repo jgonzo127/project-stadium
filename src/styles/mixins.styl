@@ -1,0 +1,67 @@
+background-image(x1 = '', x2 = '')
+	if x2 == ''
+		background-image url("/"x1)
+	else
+		background-image -webkit-image-set(url("/"x1) 1x, url("/"x2) 2x)
+
+display-flex()
+	/* autoprefixer: off */
+	display -webkit-flex
+	display flex
+
+inline-flex()
+	/* autoprefixer: off */
+	display -webkit-inline-flex
+	display inline-flex
+
+flex-flow(n)
+	-webkit-flex-flow n
+	flex-flow n
+
+justify-content(n = center)
+	-webkit-justify-content n
+	justify-content n
+
+align-items(n = center)
+	-webkit-align-items n
+	align-items n
+
+flex(n = 1)
+	-webkit-flex n
+	flex n
+
+align-self(n = auto)
+	-webkit-align-self n
+	align-self n
+
+flex-grow(n = 1)
+	-webkit-flex-grow n
+	flex-grow n
+
+flex-shrink(n = 1)
+	-webkit-flex-shrink n
+	flex-shrink n
+
+$lang-es = ":host-context(html[lang='es'])"
+
+$lang-fr = ":host-context(html[lang='fr'])"
+
+$lang-de = ":host-context(html[lang='de'])"
+
+$lang-it = ":host-context(html[lang='it'])"
+
+$lang-pt = ":host-context(html[lang='pt'])"
+
+$lang-tr = ":host-context(html[lang='tr'])"
+
+$lang-ru = ":host-context(html[lang='ru'])"
+
+$lang-ar = ":host-context(html[lang='ar'])"
+
+$lang-ja = ":host-context(html[lang='ja'])"
+
+$lang-ko = ":host-context(html[lang='ko'])"
+
+$lang-zh-Hans = ":host-context(html[lang='zh-Hans'])"
+
+$lang-zh-Hant = ":host-context(html[lang='zh-Hant'])"
