@@ -1,5 +1,6 @@
 <div #rendererContainer class="home-page-content wrapper" id="wrapper" (touchstart)="swipe($event, 'start')" (touchend)="swipe($event, 'end')">
   <div [ngClass]="{'hidden': gameStart}" class="pause-menu">
+    <h1 *ngIf="!gameStart && !gameOver">Project Stadium</h1>
     <div [hidden]="gameStart" (click)="startGame()" class="start-button">
       <span *ngIf="!gameStart && !gameOver">Start Game</span>
       <span *ngIf="!gameStart && gameOver">New Game</span>
