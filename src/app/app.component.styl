@@ -9,6 +9,47 @@
 	height 100%
 	width 100%
 	float left
+	font-family 'cabin'
+.pause-menu
+	position absolute
+	background-color rgb(108, 180, 255)
+	top 0
+	left 0
+	width 100%
+	height 100vh
+	display-flex()
+	align-items()
+	justify-content()
+	z-index 10
+	&.hidden
+		display none
+.game-over-status
+	font-size 12vw
+	width 100%
+	text-align center
+	position absolute
+	top 25%
+	z-index 12
+.start-button
+	padding 1vw 2vw
+	background-color black
+	border 1px solid white
+	z-index 99
+.scoreboard
+	position absolute
+	top 2%
+	width 100%
+	display-flex()
+	align-items()
+	font-size 15vw
+	.own-score
+		margin-left 5%
+		margin-right auto
+		color blue
+	.opponent-score
+		margin-right 5%
+		margin-left auto
+		color red
 #scoreText
 	top 16%
 	&.hidden

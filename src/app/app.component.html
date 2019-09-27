@@ -1,4 +1,15 @@
 <div #rendererContainer class="home-page-content wrapper" id="wrapper" (touchstart)="swipe($event, 'start')" (touchend)="swipe($event, 'end')">
+  <div [ngClass]="{'hidden': gameStart}" class="pause-menu">
+    <div [hidden]="gameStart" (click)="startGame()" class="start-button">
+      <span *ngIf="!gameStart && !gameOver">Start Game</span>
+      <span *ngIf="!gameStart && gameOver">New Game</span>
+    </div>
+  </div>
+  <span [hidden]="!gameOver" class="game-over-status">{{gameOverStatus}}</span>
+  <div class="scoreboard" [hidden]="!gameStart">
+    <span class="own-score">{{ownScore}}</span>
+    <span class="opponent-score">{{opponentScore}}</span>
+  </div>
   <div [ngClass]="{'hidden': !timerRunning}" id="scoreText"></div>
   <div class="goal-tap-wrapper" *ngIf="goalMeter && !goalLinedUp" (click)="handleGoalDirection()"></div>
   <div class="goal-tap-wrapper" *ngIf="goalMeter && goalLinedUp" (click)="handleGoalPower()"></div>

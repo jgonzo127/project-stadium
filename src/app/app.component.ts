@@ -1,6 +1,7 @@
 import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
 import * as THREE from 'three';
 import * as Stats from 'stats-js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { CountUp } from 'countup.js';
 
 @Component({
@@ -19,10 +20,16 @@ export class AppComponent {
   dom: any;
   sun: any
   ground: any;
+  gameStart: boolean;
+  gameOver: boolean;
+  gameOverStatus;
   offense: boolean;
+  ownScore: number;
+  opponentScore: number;
   rollingGroundSphere: any;
   goalShot: boolean = false;
-  goalTimer: number = 5;
+  goalTimer: number = 15;
+  winScore:number = 5;
   goalMeter: boolean = false;
   goalMeterSpeed: string = '1s';
   goalStatus: string = '';
@@ -43,6 +50,7 @@ export class AppComponent {
   randomOpponentDirection;
   heroSphere: any;
   ballPositionZ: number;
+  goalPositionZ: number;
   rollingSpeed=0.008;
   heroRollingSpeed;
   worldRadius=26;
@@ -111,7 +119,17 @@ export class AppComponent {
   ngOnInit() {
   }
 
-  ngAfterViewInit() {
+  startGame() {
+    if(this.gameOver) {
+      this.gameOver = false;
+      this.createWorld();
+    }
+    this.gameStart = true;
+    this.offense = true;
+    this.timerRunning = true;
+    this.goalKeeper = false;
+    this.ownScore = 0;
+    this.opponentScore = 0;
     this.rendererContainer.nativeElement.appendChild(this.renderer.domElement);
     this.countUp = new CountUp(
       'scoreText',
@@ -141,7 +159,7 @@ export class AppComponent {
     var to_remove = [];
 
     this.scene.traverse ( function( child ) {
-      if ( child instanceof THREE.Mesh || child instanceof THREE.Geometry || child instanceof THREE.Material || child instanceof THREE.Points || child instanceof THREE.PointsMaterial ) {
+      if ( child instanceof THREE.Mesh || child instanceof THREE.Geometry || child instanceof THREE.Material || child instanceof THREE.Points || child instanceof THREE.PointsMaterial || child instanceof THREE.Scene ) {
           to_remove.push( child );
         }
     } );
@@ -149,6 +167,7 @@ export class AppComponent {
     for ( var i = 0; i < to_remove.length; i++ ) {
       this.scene.remove( to_remove[i] );
     }
+    console.log(this.scene);
   }
   clearCones() {
     this.conesInPath=[];
@@ -168,9 +187,9 @@ export class AppComponent {
     this.stats = new Stats();
     //this.stats.showPanel( 1 ); // 0: fps, 1: ms, 2: mb, 3+: custom
     //document.body.appendChild( this.stats.domElement );
+    this.gameStart = false;
     this.hasCollided=false;
     this.offense = true;
-    this.timerRunning = true;
     this.goalKeeper = false;
     this.timeLimitReached = false;
     this.clock=new THREE.Clock();
@@ -206,6 +225,7 @@ export class AppComponent {
     window.addEventListener('resize', this.onWindowResize, false);//resize callback
 
   }
+  
   createWorld() {
     this.hasCollided=false;
     this.goalShot = false;
@@ -213,12 +233,14 @@ export class AppComponent {
     this.conesPool=[];
     this.heroBaseY = (this.offense) ? 1.92 : 2.15;
     this.ballPositionZ = (this.offense) ? 5.5 : 2.6;
+    this.goalPositionZ = (this.offense) ? 2.6 : 4.5;
     this.currentShots = this.totalShots;
-    this.addWorld();
-    this.addHero();
     this.addExplosion();
     this.createConesPool();
+    this.addHero();
+    this.addWorld();
   }
+
   addExplosion(){
     this.particleGeometry = new THREE.Geometry();
     for (var i = 0; i < this.particleCount; i ++ ) {
@@ -300,35 +322,47 @@ export class AppComponent {
     var meterAccuracy = this.getMeterAccuracy();
     this.ballPositionZ = -1;
     this.goalStatus = this.goalChance(meterAccuracy);
+    if(this.goalStatus === 'Goal!') this.ownScore += 1;
+    if(this.ownScore === this.winScore) {
+      this.handleGameOver('win');
+    }
     this.goalCountdown.pauseResume();
     this.goalMiniGame = false;
     this.goaltimerVisible = false;
-    setTimeout(() => {
-      this.goalShot = false;
-      this.goalStatus = '';
-      this.meterStop = false;
-      this.goalMeter = false;
-      this.goalLinedUp = false;
-      this.rotationStop = false;
-      this.timerRunning = true;
-      this.runGoalLogic();
-    }, 2000);
+    if(!this.gameOver) {
+      setTimeout(() => {
+        this.goalShot = false;
+        this.goalStatus = '';
+        this.meterStop = false;
+        this.goalMeter = false;
+        this.goalLinedUp = false;
+        this.rotationStop = false;
+        this.timerRunning = true;
+        this.runGoalLogic();
+      }, 2000);
+    }
   }
   tapGoal(direction: string) {
     var compDirection = this.getRandDirection();
     this.ballPositionZ = 20;
     this.goalStatus = (compDirection === direction) ? 'Goal!' : 'Blocked!';
+    if (compDirection === direction) this.opponentScore += 1;
+    if(this.opponentScore === this.winScore) {
+      this.handleGameOver('loss');
+    }
     this.goalCountdown.pauseResume();
     this.goaltimerVisible = false;
-    setTimeout(() => {
-      this.goalKeeper = false;
-      this.goalShot = false;
-      this.goalMiniGame = false;
-      this.goalStatus = '';
-      this.rotationStop = false;
-      this.timerRunning = true;
-      this.runGoalLogic();
-    }, 2000);
+    if(!this.gameOver) {
+      setTimeout(() => {
+        this.goalKeeper = false;
+        this.goalShot = false;
+        this.goalMiniGame = false;
+        this.goalStatus = '';
+        this.rotationStop = false;
+        this.timerRunning = true;
+        this.runGoalLogic();
+      }, 2000);
+    }
   }
   getRandDirection() {
     var direction;
@@ -376,6 +410,22 @@ export class AppComponent {
       return 'Missed!';
     }
   }
+  handleGameOver(status) {
+    this.offense = true;
+    this.gameStart = false;
+    this.goalMiniGame = false;
+    this.timerRunning = false;
+    this.goalStatus = '';
+    this.meterStop = false;
+    this.goalMeter = false;
+    this.goalLinedUp = false;
+    this.rotationStop = false;
+    this.timerRunning = true;
+    this.clearCones();
+    this.clearScene();
+    this.gameOverStatus = (status === 'win') ? 'You Won! Keep Playing!' : 'You Lost. Try Again!';
+    this.gameOver = true;
+  }
   addHero(){
     var sphereGeometry = new THREE.SphereGeometry( this.heroRadius, 15, 15 );
     var texture = new THREE.TextureLoader().load('assets/soccer-ball.jpeg');
@@ -394,6 +444,32 @@ export class AppComponent {
     this.heroSphere.rotation.z=5;
     this.currentLane=this.middleLane;
     this.heroSphere.position.x=this.currentLane;
+  }
+  addGoal() {
+    const goalLoader = new GLTFLoader;
+    goalLoader.load('assets/soccer_goal.glb',
+      (loadedGoalObject) => {
+        loadedGoalObject.scene.traverse((child) => {
+          if(child instanceof THREE.Mesh) {
+            child.material = new THREE.MeshPhongMaterial({
+              color: '0xff00ff'
+            });
+          }
+        });
+        this.scene.add(loadedGoalObject.scene);
+        if(!this.offense) {
+          loadedGoalObject.scene.position.y = this.heroBaseY;
+          loadedGoalObject.scene.position.z = this.goalPositionZ;
+        } else {
+          loadedGoalObject.scene.position.y = this.heroBaseY;
+          loadedGoalObject.scene.position.z = this.goalPositionZ;
+          loadedGoalObject.scene.rotation.y = -Math.PI;
+        }
+
+    },
+    (xhr) => {
+      console.log('loaded');
+    });
   }
   addWorld(){
     var sides=80;
@@ -535,6 +611,9 @@ export class AppComponent {
   }
 
   update(){
+    if(!this.gameStart) {
+      return;
+    }
     this.stats.update();
       //animate
       if( !this.goalShot) {
@@ -567,7 +646,11 @@ export class AppComponent {
       }
 
       if(!this.offense && this.heroSphere.position.z <= this.ballPositionZ) {
-        this.heroSphere.position.z += 0.25;
+        if(this.goalStatus === 'Blocked!') {
+          this.heroSphere.position.z -= 0.25;
+        } else {
+          this.heroSphere.position.z += 0.25;
+        }
       }
   
       if(this.timeLimitReached) {
@@ -577,6 +660,7 @@ export class AppComponent {
         this.goalPrepMessage = true;
         setTimeout(() => {
           this.goalPrepMessage = false;
+          this.addGoal();
           this.handleGoalCountdown();
           if(!this.offense) {
             this.goalKeeper = true;
@@ -592,7 +676,6 @@ export class AppComponent {
 
       if(this.clock.getElapsedTime()>this.treeReleaseInterval){
         this.clock.start();
-        console.log(this.timerRunning);
         if( !this.goalShot && this.offense && this.timerRunning) {
           this.addPathCone();
         }
@@ -697,6 +780,7 @@ export class AppComponent {
   }
   handleGoalTimer() {
     this.goalTimeUp = true;
+    this.opponentScore += 1
     this.runGoalLogic();
   }
   runGoalLogic() {
@@ -721,10 +805,6 @@ export class AppComponent {
     this.goaltimerVisible = false;
     this.countUp.reset();
     this.countUp.pauseResume();
-  }
-  gameOver() {
-    //cancelAnimationFrame( globalRenderID );
-    //window.clearInterval( powerupSpawnIntervalID );
   }
   onWindowResize() {
     //resize & align
