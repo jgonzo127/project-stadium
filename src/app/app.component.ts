@@ -137,7 +137,9 @@ export class AppComponent {
       {startVal: 0, useEasing: false, duration: this.goalTimer}
     );
     this.countUp.start(()=> {
-      this.timeLimitReached = true;
+      if(!this.hasCollided) {
+        this.timeLimitReached = true;
+      }
     });
 
     this.possessionCountDown = new CountUp(
@@ -779,9 +781,11 @@ export class AppComponent {
     }, 1000);
   }
   handleGoalTimer() {
-    this.goalTimeUp = true;
-    this.opponentScore += 1
-    this.runGoalLogic();
+    if(this.goalStatus === '') {
+      this.goalTimeUp = true;
+      this.opponentScore += 1
+      this.runGoalLogic();
+    }
   }
   runGoalLogic() {
     this.offense = !this.offense;

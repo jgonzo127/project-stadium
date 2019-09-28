@@ -130,7 +130,11 @@
         },
         "deploy": {
           "builder": "angular-cli-ghpages:deploy",
-          "options": {}
+          "options": {
+            "baseHref" : "https://jgonzo127.github.io/project-stadium/",
+            "name" : "project-stadium",
+            "email" : "jgonzo127@gmail.com"
+          }
         }
       }
     }
